@@ -54,9 +54,11 @@
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
         <!-- Header -->
-        <div class="mb-8">
-            <h1 class="text-2xl font-bold text-gray-900">Campaign Manager</h1>
-            <p class="text-gray-500 text-sm mt-1">Atur template pesan, tambahkan daftar kontak, dan kirim pesan secara berurutan.</p>
+        <div class="mb-8 flex flex-col md:flex-row md:justify-between md:items-end gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Campaign Manager</h1>
+                <p class="text-gray-500 text-sm mt-1">Atur template pesan, sesuaikan tautan dinamis, dan kirim pesan masal.</p>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -64,14 +66,25 @@
             <!-- Left Column: Setup (4 cols) -->
             <div class="lg:col-span-4 space-y-6">
                 
-                <!-- Card 1: Template Message -->
+                <!-- Card 1: Setup Tautan & Template -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                     <div class="px-5 py-4 border-b border-gray-100 bg-gray-50">
-                        <h2 class="font-semibold text-gray-800">1. Template Pesan</h2>
+                        <h2 class="font-semibold text-gray-800">1. Setup Undangan</h2>
                     </div>
-                    <div class="p-5">
-                        <p class="text-xs text-gray-500 mb-3">Gunakan variabel <code class="bg-gray-100 text-blue-600 px-1 py-0.5 rounded">{nama}</code> untuk menyisipkan nama tamu otomatis.</p>
-                        <textarea id="messageTemplate" rows="8" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition-shadow resize-none" placeholder="Halo {nama}, kami mengundang Anda..."></textarea>
+                    <div class="p-5 space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Base URL Undangan</label>
+                            <input type="text" id="baseUrl" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition-shadow" placeholder="https://undangan.com/budi-siti" value="https://undangan.com/budi-siti">
+                            <p class="text-xs text-gray-500 mt-1">Nama tamu akan otomatis ditambahkan ke URL ini.</p>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1 flex justify-between">
+                                Template Pesan
+                                <span class="text-xs font-normal text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">Gunakan [Nama] & [Link]</span>
+                            </label>
+                            <textarea id="messageTemplate" rows="8" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition-shadow resize-none" placeholder="Halo [Nama], kami mengundang Anda..."></textarea>
+                        </div>
                     </div>
                 </div>
 
@@ -82,10 +95,10 @@
                     </div>
                     <div class="p-5">
                         <p class="text-xs text-gray-500 mb-3">Ketik atau paste data kontak dengan format: <strong>Nama, Nomor WA</strong> (satu baris per kontak).</p>
-                        <textarea id="bulkContacts" rows="5" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition-shadow resize-none font-mono" placeholder="Budi Santoso, 08123456789&#10;Siti Aminah, 08987654321"></textarea>
+                        <textarea id="bulkContacts" rows="5" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition-shadow resize-none font-mono" placeholder="Andi Kurniawan, 08123456789&#10;Siti Aminah, 08987654321"></textarea>
                         
                         <div class="mt-4 flex gap-2">
-                            <button onclick="addContacts()" class="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-2 px-4 rounded-lg transition text-sm flex justify-center items-center gap-2">
+                            <button onclick="addContacts()" class="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-2 px-4 rounded-lg transition text-sm flex justify-center items-center gap-2 shadow-sm">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                   <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                                 </svg>
@@ -101,9 +114,17 @@
                 
                 <!-- Card 3: Execution Panel -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 flex-1 flex flex-col overflow-hidden">
-                    <div class="px-5 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                    <div class="px-5 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center flex-wrap gap-3">
                         <h2 class="font-semibold text-gray-800">3. Antrean Pengiriman</h2>
-                        <button onclick="clearQueue()" class="text-red-600 hover:text-red-800 text-xs font-medium px-3 py-1 rounded bg-red-50 hover:bg-red-100 transition">Bersihkan Antrean</button>
+                        <div class="flex gap-2">
+                            <button onclick="clearQueue()" class="text-gray-600 hover:text-red-700 bg-white border border-gray-300 hover:bg-red-50 hover:border-red-200 text-xs font-medium px-3 py-1.5 rounded transition">Bersihkan</button>
+                            <button onclick="sendAllPending()" class="bg-[#25D366] hover:bg-[#1ebe5c] text-white text-xs font-medium px-4 py-1.5 rounded shadow-sm transition flex items-center gap-1.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                  <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                                </svg>
+                                Kirim Semua Pending
+                            </button>
+                        </div>
                     </div>
                     
                     <div class="p-5 flex-1 flex flex-col">
@@ -161,6 +182,18 @@
         </div>
     </main>
 
+    <!-- Custom Modal -->
+    <div id="customModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-gray-900 bg-opacity-50 transition-opacity backdrop-blur-sm">
+        <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full mx-4 transform transition-all border border-gray-100">
+            <h3 id="modalTitle" class="text-lg font-bold text-gray-900 mb-2">Konfirmasi</h3>
+            <p id="modalBody" class="text-sm text-gray-600 mb-6 leading-relaxed">Apakah Anda yakin?</p>
+            <div class="flex justify-end gap-3">
+                <button onclick="closeModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition">Batal</button>
+                <button id="modalConfirmBtn" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition shadow-sm">Lanjutkan</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notification -->
     <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 bg-gray-900 text-white px-6 py-3 rounded-lg shadow-xl z-50 flex items-center gap-3 transition-all duration-300">
         <svg id="toastIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -174,11 +207,12 @@
         let contacts = [];
         let contactIdCounter = 1;
 
-        // Default template
-        const defaultTemplate = `Kepada Yth. Bapak/Ibu/Saudara/i\n*{nama}*\n\nTanpa mengurangi rasa hormat, perkenankan kami mengundang Anda untuk hadir pada acara pernikahan kami.\n\nDetail undangan dapat dilihat pada tautan berikut:\nhttps://undangan.com/link\n\nTerima kasih.`;
+        // Default template uses [Nama] and [Link]
+        const defaultTemplate = `Kepada Yth. Bapak/Ibu/Saudara/i\n*[Nama]*\n\nTanpa mengurangi rasa hormat, perkenankan kami mengundang Anda untuk hadir pada acara pernikahan kami.\n\nDetail undangan dapat dilihat pada tautan berikut:\n[Link]\n\nKehadiran Anda merupakan suatu kehormatan bagi kami. Terima kasih.`;
 
         // DOM Elements
         const messageTemplateEl = document.getElementById('messageTemplate');
+        const baseUrlEl = document.getElementById('baseUrl');
         const bulkContactsEl = document.getElementById('bulkContacts');
         const tableBodyEl = document.getElementById('contactTableBody');
         const emptyStateRow = document.getElementById('emptyStateRow');
@@ -188,13 +222,16 @@
         const toastEl = document.getElementById('toast');
         const toastMessageEl = document.getElementById('toastMessage');
 
+        // Modal Variables
+        let modalCallback = null;
+
         // Initialize
         window.onload = () => {
             messageTemplateEl.value = defaultTemplate;
             updateStats();
         };
 
-        // --- Functions ---
+        // --- Core Functions ---
 
         function addContacts() {
             const rawText = bulkContactsEl.value.trim();
@@ -236,7 +273,6 @@
         }
 
         function renderTable() {
-            // Clear existing rows except empty state
             tableBodyEl.innerHTML = '';
             
             if (contacts.length === 0) {
@@ -251,7 +287,7 @@
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-gray-50 transition-colors";
                 
-                // Status Badge styling
+                // Status Badge
                 let statusBadge = '';
                 if (contact.status === 'Pending') {
                     statusBadge = `<span class="bg-amber-100 text-amber-700 text-xs font-medium px-2.5 py-1 rounded-full border border-amber-200">Pending</span>`;
@@ -259,7 +295,7 @@
                     statusBadge = `<span class="bg-green-100 text-green-700 text-xs font-medium px-2.5 py-1 rounded-full border border-green-200">Sent</span>`;
                 }
 
-                // Action Button styling
+                // Action Button
                 let actionButton = '';
                 if (contact.status === 'Pending') {
                     actionButton = `
@@ -286,16 +322,28 @@
             });
         }
 
+        // Send a single message
         function sendWA(id) {
             const contactIndex = contacts.findIndex(c => c.id === id);
             if (contactIndex === -1) return;
 
             const contact = contacts[contactIndex];
             const template = messageTemplateEl.value;
+            const baseUrl = baseUrlEl.value.trim();
             
-            // Replace variables
-            // using global regex /gi for case insensitive replacement
-            let finalMessage = template.replace(/\{nama\}/gi, contact.name);
+            // Generate Personalized Link (append ?to=Guest+Name or &to=Guest+Name)
+            let personalizedLink = baseUrl;
+            if (baseUrl) {
+                const separator = baseUrl.includes('?') ? '&' : '?';
+                // Using URLSearchParams or simple encodeURIComponent
+                const encodedName = encodeURIComponent(contact.name).replace(/%20/g, '+');
+                personalizedLink = `${baseUrl}${separator}to=${encodedName}`;
+            }
+
+            // Replace variables [Nama] and [Link] case-insensitively
+            let finalMessage = template
+                .replace(/\[Nama\]/gi, contact.name)
+                .replace(/\[Link\]/gi, personalizedLink);
 
             // Validation
             if (!contact.phone) {
@@ -303,15 +351,52 @@
                 return;
             }
 
-            // Encode & Send
+            // Encode text for WhatsApp API
             const encodedMessage = encodeURIComponent(finalMessage);
             const waLink = `https://wa.me/${contact.phone}?text=${encodedMessage}`;
+            
+            // Open WhatsApp in new tab
             window.open(waLink, '_blank');
 
-            // Update Status
+            // Update Status in Dashboard
             contacts[contactIndex].status = 'Sent';
             renderTable();
             updateStats();
+        }
+
+        // Bulk Send Function
+        function sendAllPending() {
+            const pendingContacts = contacts.filter(c => c.status === 'Pending');
+            
+            if (pendingContacts.length === 0) {
+                showToast('Tidak ada kontak pending untuk dikirim.', 'error');
+                return;
+            }
+            
+            // Show Custom Modal Warning to ensure pop-ups are allowed
+            showModal(
+                'Konfirmasi Pengiriman Masal',
+                `Sistem akan mencoba membuka ${pendingContacts.length} tab WhatsApp secara berurutan. PASTIKAN Anda telah mengizinkan "Pop-ups and redirects" (Allow Pop-ups) pada browser ini agar tidak terblokir.`,
+                () => {
+                    let delay = 0;
+                    const delayInterval = 2000; // 2 seconds between opening tabs
+                    
+                    pendingContacts.forEach((contact, index) => {
+                        setTimeout(() => {
+                            sendWA(contact.id);
+                            
+                            // Show success message at the very end
+                            if (index === pendingContacts.length - 1) {
+                                setTimeout(() => {
+                                    showToast('Semua pesan dalam antrean telah diproses.', 'success');
+                                }, 500);
+                            }
+                        }, delay);
+                        
+                        delay += delayInterval;
+                    });
+                }
+            );
         }
 
         function updateStats() {
@@ -328,7 +413,6 @@
             
             progressBarEl.style.width = `${percentage}%`;
 
-            // Change progress bar color based on completion
             if (percentage === 100 && total > 0) {
                 progressBarEl.classList.remove('bg-blue-600');
                 progressBarEl.classList.add('bg-green-500');
@@ -340,15 +424,19 @@
 
         function clearQueue() {
             if (contacts.length === 0) return;
-            if (confirm("Anda yakin ingin menghapus semua antrean kontak?")) {
-                contacts = [];
-                renderTable();
-                updateStats();
-                showToast("Antrean dibersihkan", "success");
-            }
+            showModal(
+                'Bersihkan Antrean', 
+                'Apakah Anda yakin ingin menghapus semua daftar kontak dari antrean pengiriman ini?', 
+                () => {
+                    contacts = [];
+                    renderTable();
+                    updateStats();
+                    showToast("Antrean berhasil dibersihkan", "success");
+                }
+            );
         }
 
-        // --- Helpers ---
+        // --- UI Helpers ---
 
         function formatPhoneNumber(phone) {
             let cleanPhone = phone.replace(/\D/g, '');
@@ -362,6 +450,25 @@
             return cleanPhone;
         }
 
+        // Modal Functions
+        function showModal(title, message, confirmCallback) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalBody').textContent = message;
+            modalCallback = confirmCallback;
+            document.getElementById('customModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('customModal').classList.add('hidden');
+            modalCallback = null;
+        }
+
+        document.getElementById('modalConfirmBtn').addEventListener('click', () => {
+            if (modalCallback) modalCallback();
+            closeModal();
+        });
+
+        // Toast Function
         let toastTimeout;
         function showToast(message, type = 'success') {
             const iconSvg = document.getElementById('toastIcon');
@@ -376,12 +483,10 @@
 
             toastMessageEl.textContent = message;
             
-            // Animate in
             toastEl.classList.remove('translate-y-20', 'opacity-0');
             
             clearTimeout(toastTimeout);
             toastTimeout = setTimeout(() => {
-                // Animate out
                 toastEl.classList.add('translate-y-20', 'opacity-0');
             }, 3000);
         }
