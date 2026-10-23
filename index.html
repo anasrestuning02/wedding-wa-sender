@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Sender - WA Campaign Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Gray 100 */
+        }
+        /* Custom scrollbar for table */
+        .table-container::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+        .table-container::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+            border-radius: 4px;
+        }
+        .table-container::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+    </style>
+</head>
+<body class="text-gray-800 antialiased">
+
+    <!-- Top Navbar -->
+    <nav class="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-3">
+                    <div class="bg-blue-600 p-2 rounded-lg text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                        </svg>
+                    </div>
+                    <span class="font-bold text-xl text-gray-900">Smart WA Sender</span>
+                </div>
+                <div>
+                    <span class="bg-blue-50 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full border border-blue-200">Pro Dashboard</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-2xl font-bold text-gray-900">Campaign Manager</h1>
+            <p class="text-gray-500 text-sm mt-1">Atur template pesan, tambahkan daftar kontak, dan kirim pesan secara berurutan.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Left Column: Setup (4 cols) -->
+            <div class="lg:col-span-4 space-y-6">
+                
+                <!-- Card 1: Template Message -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="px-5 py-4 border-b border-gray-100 bg-gray-50">
+                        <h2 class="font-semibold text-gray-800">1. Template Pesan</h2>
+                    </div>
+                    <div class="p-5">
+                        <p class="text-xs text-gray-500 mb-3">Gunakan variabel <code class="bg-gray-100 text-blue-600 px-1 py-0.5 rounded">{nama}</code> untuk menyisipkan nama tamu otomatis.</p>
+                        <textarea id="messageTemplate" rows="8" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition-shadow resize-none" placeholder="Halo {nama}, kami mengundang Anda..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Card 2: Import Contacts -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="px-5 py-4 border-b border-gray-100 bg-gray-50">
+                        <h2 class="font-semibold text-gray-800">2. Import Kontak</h2>
+                    </div>
+                    <div class="p-5">
+                        <p class="text-xs text-gray-500 mb-3">Ketik atau paste data kontak dengan format: <strong>Nama, Nomor WA</strong> (satu baris per kontak).</p>
+                        <textarea id="bulkContacts" rows="5" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition-shadow resize-none font-mono" placeholder="Budi Santoso, 08123456789&#10;Siti Aminah, 08987654321"></textarea>
+                        
+                        <div class="mt-4 flex gap-2">
+                            <button onclick="addContacts()" class="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-2 px-4 rounded-lg transition text-sm flex justify-center items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                                </svg>
+                                Tambahkan ke Antrean
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Queue & Execution (8 cols) -->
+            <div class="lg:col-span-8 flex flex-col space-y-6">
+                
+                <!-- Card 3: Execution Panel -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 flex-1 flex flex-col overflow-hidden">
+                    <div class="px-5 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                        <h2 class="font-semibold text-gray-800">3. Antrean Pengiriman</h2>
+                        <button onclick="clearQueue()" class="text-red-600 hover:text-red-800 text-xs font-medium px-3 py-1 rounded bg-red-50 hover:bg-red-100 transition">Bersihkan Antrean</button>
+                    </div>
+                    
+                    <div class="p-5 flex-1 flex flex-col">
+                        
+                        <!-- Progress Section -->
+                        <div class="mb-6">
+                            <div class="flex justify-between items-end mb-2">
+                                <div>
+                                    <h3 class="text-sm font-medium text-gray-700">Progres Pengiriman</h3>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-2xl font-bold text-gray-900" id="sentCount">0</span>
+                                    <span class="text-sm text-gray-500">/ <span id="totalCount">0</span> Terkirim</span>
+                                </div>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                <div id="progressBar" class="bg-blue-600 h-2.5 rounded-full transition-all duration-500 ease-out" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Data Table -->
+                        <div class="border border-gray-200 rounded-lg overflow-hidden flex-1 flex flex-col">
+                            <div class="overflow-x-auto table-container flex-1">
+                                <table class="w-full text-sm text-left text-gray-500 relative">
+                                    <thead class="text-xs text-gray-700 uppercase bg-gray-100 sticky top-0 z-10 shadow-sm">
+                                        <tr>
+                                            <th scope="col" class="px-4 py-3 w-12 text-center">No</th>
+                                            <th scope="col" class="px-4 py-3">Nama</th>
+                                            <th scope="col" class="px-4 py-3">No. WhatsApp</th>
+                                            <th scope="col" class="px-4 py-3 text-center w-28">Status</th>
+                                            <th scope="col" class="px-4 py-3 text-center w-28">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="contactTableBody" class="divide-y divide-gray-200">
+                                        <!-- Empty State -->
+                                        <tr id="emptyStateRow">
+                                            <td colspan="5" class="px-4 py-12 text-center">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-300 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                                </svg>
+                                                <p class="text-gray-500 font-medium">Belum ada kontak</p>
+                                                <p class="text-xs text-gray-400 mt-1">Silakan import kontak di panel sebelah kiri.</p>
+                                            </td>
+                                        </tr>
+                                        <!-- Dynamic Rows Go Here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 bg-gray-900 text-white px-6 py-3 rounded-lg shadow-xl z-50 flex items-center gap-3 transition-all duration-300">
+        <svg id="toastIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+        <span id="toastMessage" class="font-medium text-sm">Notifikasi</span>
+    </div>
+
+    <script>
+        // State Management
+        let contacts = [];
+        let contactIdCounter = 1;
+
+        // Default template
+        const defaultTemplate = `Kepada Yth. Bapak/Ibu/Saudara/i\n*{nama}*\n\nTanpa mengurangi rasa hormat, perkenankan kami mengundang Anda untuk hadir pada acara pernikahan kami.\n\nDetail undangan dapat dilihat pada tautan berikut:\nhttps://undangan.com/link\n\nTerima kasih.`;
+
+        // DOM Elements
+        const messageTemplateEl = document.getElementById('messageTemplate');
+        const bulkContactsEl = document.getElementById('bulkContacts');
+        const tableBodyEl = document.getElementById('contactTableBody');
+        const emptyStateRow = document.getElementById('emptyStateRow');
+        const sentCountEl = document.getElementById('sentCount');
+        const totalCountEl = document.getElementById('totalCount');
+        const progressBarEl = document.getElementById('progressBar');
+        const toastEl = document.getElementById('toast');
+        const toastMessageEl = document.getElementById('toastMessage');
+
+        // Initialize
+        window.onload = () => {
+            messageTemplateEl.value = defaultTemplate;
+            updateStats();
+        };
+
+        // --- Functions ---
+
+        function addContacts() {
+            const rawText = bulkContactsEl.value.trim();
+            if (!rawText) {
+                showToast('Kolom import kontak masih kosong.', 'error');
+                return;
+            }
+
+            const lines = rawText.split('\n');
+            let addedCount = 0;
+
+            lines.forEach(line => {
+                // Split by comma
+                const parts = line.split(',');
+                if (parts.length >= 2) {
+                    const name = parts[0].trim();
+                    const phone = parts[1].trim();
+                    
+                    if (name && phone) {
+                        contacts.push({
+                            id: contactIdCounter++,
+                            name: name,
+                            phone: formatPhoneNumber(phone),
+                            status: 'Pending'
+                        });
+                        addedCount++;
+                    }
+                }
+            });
+
+            if (addedCount > 0) {
+                bulkContactsEl.value = ''; // clear input
+                renderTable();
+                updateStats();
+                showToast(`${addedCount} kontak berhasil ditambahkan.`, 'success');
+            } else {
+                showToast('Format tidak valid. Gunakan format: Nama, Nomor', 'error');
+            }
+        }
+
+        function renderTable() {
+            // Clear existing rows except empty state
+            tableBodyEl.innerHTML = '';
+            
+            if (contacts.length === 0) {
+                tableBodyEl.appendChild(emptyStateRow);
+                emptyStateRow.style.display = 'table-row';
+                return;
+            }
+            
+            emptyStateRow.style.display = 'none';
+
+            contacts.forEach((contact, index) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50 transition-colors";
+                
+                // Status Badge styling
+                let statusBadge = '';
+                if (contact.status === 'Pending') {
+                    statusBadge = `<span class="bg-amber-100 text-amber-700 text-xs font-medium px-2.5 py-1 rounded-full border border-amber-200">Pending</span>`;
+                } else if (contact.status === 'Sent') {
+                    statusBadge = `<span class="bg-green-100 text-green-700 text-xs font-medium px-2.5 py-1 rounded-full border border-green-200">Sent</span>`;
+                }
+
+                // Action Button styling
+                let actionButton = '';
+                if (contact.status === 'Pending') {
+                    actionButton = `
+                        <button onclick="sendWA(${contact.id})" class="bg-[#25D366] hover:bg-[#1ebe5c] text-white text-xs font-medium px-3 py-1.5 rounded shadow-sm transition flex items-center justify-center gap-1 w-full">
+                            Kirim
+                        </button>
+                    `;
+                } else {
+                    actionButton = `
+                        <button onclick="sendWA(${contact.id})" class="bg-gray-100 hover:bg-gray-200 text-gray-600 border border-gray-300 text-xs font-medium px-3 py-1.5 rounded transition flex items-center justify-center gap-1 w-full">
+                            Kirim Ulang
+                        </button>
+                    `;
+                }
+
+                tr.innerHTML = `
+                    <td class="px-4 py-3 text-center text-gray-900 font-medium">${index + 1}</td>
+                    <td class="px-4 py-3 font-medium text-gray-900">${contact.name}</td>
+                    <td class="px-4 py-3 text-gray-500 font-mono text-sm">${contact.phone}</td>
+                    <td class="px-4 py-3 text-center">${statusBadge}</td>
+                    <td class="px-4 py-3 text-center">${actionButton}</td>
+                `;
+                tableBodyEl.appendChild(tr);
+            });
+        }
+
+        function sendWA(id) {
+            const contactIndex = contacts.findIndex(c => c.id === id);
+            if (contactIndex === -1) return;
+
+            const contact = contacts[contactIndex];
+            const template = messageTemplateEl.value;
+            
+            // Replace variables
+            // using global regex /gi for case insensitive replacement
+            let finalMessage = template.replace(/\{nama\}/gi, contact.name);
+
+            // Validation
+            if (!contact.phone) {
+                showToast(`Nomor WA tidak valid untuk ${contact.name}`, 'error');
+                return;
+            }
+
+            // Encode & Send
+            const encodedMessage = encodeURIComponent(finalMessage);
+            const waLink = `https://wa.me/${contact.phone}?text=${encodedMessage}`;
+            window.open(waLink, '_blank');
+
+            // Update Status
+            contacts[contactIndex].status = 'Sent';
+            renderTable();
+            updateStats();
+        }
+
+        function updateStats() {
+            const total = contacts.length;
+            const sent = contacts.filter(c => c.status === 'Sent').length;
+            
+            totalCountEl.textContent = total;
+            sentCountEl.textContent = sent;
+
+            let percentage = 0;
+            if (total > 0) {
+                percentage = (sent / total) * 100;
+            }
+            
+            progressBarEl.style.width = `${percentage}%`;
+
+            // Change progress bar color based on completion
+            if (percentage === 100 && total > 0) {
+                progressBarEl.classList.remove('bg-blue-600');
+                progressBarEl.classList.add('bg-green-500');
+            } else {
+                progressBarEl.classList.add('bg-blue-600');
+                progressBarEl.classList.remove('bg-green-500');
+            }
+        }
+
+        function clearQueue() {
+            if (contacts.length === 0) return;
+            if (confirm("Anda yakin ingin menghapus semua antrean kontak?")) {
+                contacts = [];
+                renderTable();
+                updateStats();
+                showToast("Antrean dibersihkan", "success");
+            }
+        }
+
+        // --- Helpers ---
+
+        function formatPhoneNumber(phone) {
+            let cleanPhone = phone.replace(/\D/g, '');
+            if (!cleanPhone) return '';
+            
+            if (cleanPhone.startsWith('0')) {
+                cleanPhone = '62' + cleanPhone.substring(1);
+            } else if (cleanPhone.startsWith('8')) {
+                cleanPhone = '62' + cleanPhone;
+            }
+            return cleanPhone;
+        }
+
+        let toastTimeout;
+        function showToast(message, type = 'success') {
+            const iconSvg = document.getElementById('toastIcon');
+            
+            if (type === 'success') {
+                iconSvg.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />`;
+                iconSvg.className = "h-5 w-5 text-green-400";
+            } else {
+                iconSvg.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />`;
+                iconSvg.className = "h-5 w-5 text-red-400";
+            }
+
+            toastMessageEl.textContent = message;
+            
+            // Animate in
+            toastEl.classList.remove('translate-y-20', 'opacity-0');
+            
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                // Animate out
+                toastEl.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
