@@ -27,6 +27,18 @@
         .table-container::-webkit-scrollbar-thumb:hover {
             background: #94a3b8; 
         }
+        /* Tab transition */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body class="text-gray-800 antialiased">
@@ -90,19 +102,57 @@
 
                 <!-- Card 2: Import Contacts -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                    <div class="px-5 py-4 border-b border-gray-100 bg-gray-50">
+                    <div class="px-5 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
                         <h2 class="font-semibold text-gray-800">2. Import Kontak</h2>
                     </div>
+                    
+                    <!-- Tabs Header -->
+                    <div class="flex border-b border-gray-200">
+                        <button onclick="switchTab('manual')" id="tab-manual" class="flex-1 py-2.5 text-sm font-medium text-blue-600 border-b-2 border-blue-600 bg-white">Manual Input</button>
+                        <button onclick="switchTab('sheet')" id="tab-sheet" class="flex-1 py-2.5 text-sm font-medium text-gray-500 border-b-2 border-transparent bg-white hover:text-gray-700 hover:bg-gray-50">Google Sheets</button>
+                    </div>
+
                     <div class="p-5">
-                        <p class="text-xs text-gray-500 mb-3">Ketik atau paste data kontak dengan format: <strong>Nama, Nomor WA</strong> (satu baris per kontak).</p>
-                        <textarea id="bulkContacts" rows="5" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition-shadow resize-none font-mono" placeholder="Andi Kurniawan, 08123456789&#10;Siti Aminah, 08987654321"></textarea>
                         
-                        <div class="mt-4 flex gap-2">
-                            <button onclick="addContacts()" class="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-2 px-4 rounded-lg transition text-sm flex justify-center items-center gap-2 shadow-sm">
+                        <!-- Manual Tab Content -->
+                        <div id="content-manual" class="tab-content active">
+                            <p class="text-xs text-gray-500 mb-3">Ketik atau paste data kontak dengan format: <strong>Nama, Nomor WA</strong> (satu baris per kontak).</p>
+                            <textarea id="bulkContacts" rows="5" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition-shadow resize-none font-mono" placeholder="Andi Kurniawan, 08123456789&#10;Siti Aminah, 08987654321"></textarea>
+                            
+                            <div class="mt-4">
+                                <button onclick="addContactsManual()" class="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-2 px-4 rounded-lg transition text-sm flex justify-center items-center gap-2 shadow-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                                    </svg>
+                                    Tambahkan ke Antrean
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Google Sheets Tab Content -->
+                        <div id="content-sheet" class="tab-content">
+                            <div class="bg-blue-50 border border-blue-100 rounded-lg p-3 mb-4">
+                                <h4 class="text-xs font-semibold text-blue-800 flex items-center gap-1.5 mb-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    Instruksi Penting
+                                </h4>
+                                <ul class="text-[11px] text-blue-700 list-disc list-inside space-y-1 ml-1">
+                                    <li>Kolom 1 harus berisi <strong>Nama</strong>.</li>
+                                    <li>Kolom 2 harus berisi <strong>No. WhatsApp</strong>.</li>
+                                    <li>Akses file harus diatur ke <strong>"Siapa saja yang memiliki link"</strong> (Anyone with the link).</li>
+                                </ul>
+                            </div>
+                            
+                            <label class="block text-sm font-medium text-gray-700 mb-1">URL Google Sheets</label>
+                            <input type="text" id="sheetUrl" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#109d59] focus:border-[#109d59] outline-none text-sm transition-shadow mb-4" placeholder="https://docs.google.com/spreadsheets/d/1A2B3C...">
+                            
+                            <button onclick="importFromGoogleSheets()" id="btnImportSheet" class="w-full bg-[#109d59] hover:bg-[#0d854a] text-white font-medium py-2 px-4 rounded-lg transition text-sm flex justify-center items-center gap-2 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                                 </svg>
-                                Tambahkan ke Antrean
+                                Import Data
                             </button>
                         </div>
                     </div>
@@ -146,7 +196,7 @@
                         </div>
 
                         <!-- Data Table -->
-                        <div class="border border-gray-200 rounded-lg overflow-hidden flex-1 flex flex-col">
+                        <div class="border border-gray-200 rounded-lg overflow-hidden flex-1 flex flex-col min-h-[300px]">
                             <div class="overflow-x-auto table-container flex-1">
                                 <table class="w-full text-sm text-left text-gray-500 relative">
                                     <thead class="text-xs text-gray-700 uppercase bg-gray-100 sticky top-0 z-10 shadow-sm">
@@ -207,13 +257,14 @@
         let contacts = [];
         let contactIdCounter = 1;
 
-        // Default template uses [Nama] and [Link]
+        // Default template
         const defaultTemplate = `Kepada Yth. Bapak/Ibu/Saudara/i\n*[Nama]*\n\nTanpa mengurangi rasa hormat, perkenankan kami mengundang Anda untuk hadir pada acara pernikahan kami.\n\nDetail undangan dapat dilihat pada tautan berikut:\n[Link]\n\nKehadiran Anda merupakan suatu kehormatan bagi kami. Terima kasih.`;
 
         // DOM Elements
         const messageTemplateEl = document.getElementById('messageTemplate');
         const baseUrlEl = document.getElementById('baseUrl');
         const bulkContactsEl = document.getElementById('bulkContacts');
+        const sheetUrlEl = document.getElementById('sheetUrl');
         const tableBodyEl = document.getElementById('contactTableBody');
         const emptyStateRow = document.getElementById('emptyStateRow');
         const sentCountEl = document.getElementById('sentCount');
@@ -231,30 +282,110 @@
             updateStats();
         };
 
+        // --- UI Tabs Helpers ---
+        function switchTab(tabName) {
+            document.getElementById('content-manual').classList.remove('active');
+            document.getElementById('content-sheet').classList.remove('active');
+            
+            document.getElementById('tab-manual').className = "flex-1 py-2.5 text-sm font-medium text-gray-500 border-b-2 border-transparent bg-white hover:text-gray-700 hover:bg-gray-50";
+            document.getElementById('tab-sheet').className = "flex-1 py-2.5 text-sm font-medium text-gray-500 border-b-2 border-transparent bg-white hover:text-gray-700 hover:bg-gray-50";
+            
+            if (tabName === 'manual') {
+                document.getElementById('content-manual').classList.add('active');
+                document.getElementById('tab-manual').className = "flex-1 py-2.5 text-sm font-medium text-blue-600 border-b-2 border-blue-600 bg-white";
+            } else {
+                document.getElementById('content-sheet').classList.add('active');
+                document.getElementById('tab-sheet').className = "flex-1 py-2.5 text-sm font-medium text-[#109d59] border-b-2 border-[#109d59] bg-white";
+            }
+        }
+
         // --- Core Functions ---
 
-        function addContacts() {
+        // 1. Manual Add
+        function addContactsManual() {
             const rawText = bulkContactsEl.value.trim();
             if (!rawText) {
-                showToast('Kolom import kontak masih kosong.', 'error');
+                showToast('Kolom import manual masih kosong.', 'error');
                 return;
             }
 
             const lines = rawText.split('\n');
+            processLinesAndAdd(lines);
+            
+            if(bulkContactsEl.value !== '') bulkContactsEl.value = ''; // clear input if successful
+        }
+
+        // 2. Google Sheets Import
+        async function importFromGoogleSheets() {
+            const urlInput = sheetUrlEl.value.trim();
+            if(!urlInput) {
+                return showToast('URL Google Sheets tidak boleh kosong.', 'error');
+            }
+
+            // Extract Sheet ID
+            const regex = /\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/;
+            const match = urlInput.match(regex);
+            
+            if(!match || !match[1]) {
+                return showToast('URL tidak valid. Pastikan itu link Google Sheets.', 'error');
+            }
+
+            const sheetId = match[1];
+            const exportUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv`;
+
+            const btn = document.getElementById('btnImportSheet');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memuat Data...`;
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(exportUrl);
+                if (!response.ok) {
+                    throw new Error('Gagal mengakses file. Pastikan akses diatur ke "Siapa saja yang memiliki link".');
+                }
+                
+                const csvText = await response.text();
+                // Simple CSV split by newline
+                const lines = csvText.split(/\r?\n/);
+                
+                // Optional: Check if first row is header (e.g. contains 'nama' or 'name')
+                if(lines.length > 0) {
+                    const firstRow = lines[0].toLowerCase();
+                    if(firstRow.includes('nama') || firstRow.includes('name')) {
+                        lines.shift(); // Remove header row
+                    }
+                }
+                
+                processLinesAndAdd(lines);
+                sheetUrlEl.value = '';
+                
+            } catch (error) {
+                showToast(error.message, 'error');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // Shared function to process array of strings (CSV or Text lines)
+        function processLinesAndAdd(lines) {
             let addedCount = 0;
 
             lines.forEach(line => {
-                // Split by comma
+                // Handle basic CSV comma splitting, removing quotes if any
                 const parts = line.split(',');
+                
                 if (parts.length >= 2) {
-                    const name = parts[0].trim();
-                    const phone = parts[1].trim();
+                    const name = parts[0].replace(/^"|"$/g, '').trim();
+                    const phoneRaw = parts[1].replace(/^"|"$/g, '').trim();
+                    const phone = formatPhoneNumber(phoneRaw);
                     
-                    if (name && phone) {
+                    // Validation: Needs name, and phone must have digits
+                    if (name && phone && phone.length > 5 && /\d/.test(phoneRaw)) {
                         contacts.push({
                             id: contactIdCounter++,
                             name: name,
-                            phone: formatPhoneNumber(phone),
+                            phone: phone,
                             status: 'Pending'
                         });
                         addedCount++;
@@ -263,12 +394,11 @@
             });
 
             if (addedCount > 0) {
-                bulkContactsEl.value = ''; // clear input
                 renderTable();
                 updateStats();
                 showToast(`${addedCount} kontak berhasil ditambahkan.`, 'success');
             } else {
-                showToast('Format tidak valid. Gunakan format: Nama, Nomor', 'error');
+                showToast('Tidak ada data valid yang ditemukan.', 'error');
             }
         }
 
@@ -313,7 +443,7 @@
 
                 tr.innerHTML = `
                     <td class="px-4 py-3 text-center text-gray-900 font-medium">${index + 1}</td>
-                    <td class="px-4 py-3 font-medium text-gray-900">${contact.name}</td>
+                    <td class="px-4 py-3 font-medium text-gray-900 max-w-[150px] truncate" title="${contact.name}">${contact.name}</td>
                     <td class="px-4 py-3 text-gray-500 font-mono text-sm">${contact.phone}</td>
                     <td class="px-4 py-3 text-center">${statusBadge}</td>
                     <td class="px-4 py-3 text-center">${actionButton}</td>
@@ -331,34 +461,29 @@
             const template = messageTemplateEl.value;
             const baseUrl = baseUrlEl.value.trim();
             
-            // Generate Personalized Link (append ?to=Guest+Name or &to=Guest+Name)
+            // Generate Personalized Link
             let personalizedLink = baseUrl;
             if (baseUrl) {
                 const separator = baseUrl.includes('?') ? '&' : '?';
-                // Using URLSearchParams or simple encodeURIComponent
                 const encodedName = encodeURIComponent(contact.name).replace(/%20/g, '+');
                 personalizedLink = `${baseUrl}${separator}to=${encodedName}`;
             }
 
-            // Replace variables [Nama] and [Link] case-insensitively
+            // Replace variables
             let finalMessage = template
                 .replace(/\[Nama\]/gi, contact.name)
                 .replace(/\[Link\]/gi, personalizedLink);
 
-            // Validation
             if (!contact.phone) {
                 showToast(`Nomor WA tidak valid untuk ${contact.name}`, 'error');
                 return;
             }
 
-            // Encode text for WhatsApp API
             const encodedMessage = encodeURIComponent(finalMessage);
             const waLink = `https://wa.me/${contact.phone}?text=${encodedMessage}`;
             
-            // Open WhatsApp in new tab
             window.open(waLink, '_blank');
 
-            // Update Status in Dashboard
             contacts[contactIndex].status = 'Sent';
             renderTable();
             updateStats();
@@ -373,19 +498,17 @@
                 return;
             }
             
-            // Show Custom Modal Warning to ensure pop-ups are allowed
             showModal(
                 'Konfirmasi Pengiriman Masal',
                 `Sistem akan mencoba membuka ${pendingContacts.length} tab WhatsApp secara berurutan. PASTIKAN Anda telah mengizinkan "Pop-ups and redirects" (Allow Pop-ups) pada browser ini agar tidak terblokir.`,
                 () => {
                     let delay = 0;
-                    const delayInterval = 2000; // 2 seconds between opening tabs
+                    const delayInterval = 2000; // 2 seconds delay
                     
                     pendingContacts.forEach((contact, index) => {
                         setTimeout(() => {
                             sendWA(contact.id);
                             
-                            // Show success message at the very end
                             if (index === pendingContacts.length - 1) {
                                 setTimeout(() => {
                                     showToast('Semua pesan dalam antrean telah diproses.', 'success');
@@ -436,7 +559,7 @@
             );
         }
 
-        // --- UI Helpers ---
+        // --- Helpers ---
 
         function formatPhoneNumber(phone) {
             let cleanPhone = phone.replace(/\D/g, '');
@@ -450,7 +573,7 @@
             return cleanPhone;
         }
 
-        // Modal Functions
+        // Modal Logic
         function showModal(title, message, confirmCallback) {
             document.getElementById('modalTitle').textContent = title;
             document.getElementById('modalBody').textContent = message;
@@ -468,7 +591,7 @@
             closeModal();
         });
 
-        // Toast Function
+        // Toast Logic
         let toastTimeout;
         function showToast(message, type = 'success') {
             const iconSvg = document.getElementById('toastIcon');
@@ -482,7 +605,6 @@
             }
 
             toastMessageEl.textContent = message;
-            
             toastEl.classList.remove('translate-y-20', 'opacity-0');
             
             clearTimeout(toastTimeout);
